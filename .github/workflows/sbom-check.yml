@@ -29,7 +29,7 @@ jobs:
       - name: Generate SBOM and run vulnerability scan
         run: |
           python sbom_generator.py \
-            --input components.example.json \
+            --input components.pause.json \
             --project-name "Pause" \
             --project-version "1.0.0" \
             --output-dir sbom_output
