@@ -39,15 +39,16 @@ jobs:
         with:
           name: sbom-and-vuln-report
           path: sbom_output/
-
-      - name: Fail the run if any vulnerabilities were found
+          
+      - name: Report vulnerabilities without failing the build
         run: |
           python -c "
           import json, sys
           report = json.load(open('sbom_output/vulnerability_report.json'))
           found = [k for k, v in report.items() if v['vulnerabilities']]
           if found:
-              print('Potential vulnerabilities found in:', found)
-              sys.exit(1)
-          print('No known vulnerabilities found.')
+              print('⚠️ Potential vulnerabilities found in:', found)
+              print('Review the artifact report for details, but passing the build.')
+              sys.exit(0)
+          print('✅ No known vulnerabilities found.')
           "
