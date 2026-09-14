@@ -1,0 +1,8 @@
+[
+  {"name": "ArduinoJson", "version": "6.21.3", "type": "library", "ecosystem": null},
+  {"name": "ESP32-audioI2S", "version": "3.0.0", "type": "library", "ecosystem": null},
+  {"name": "Adafruit SSD1306", "version": "2.5.9", "type": "library", "ecosystem": null},
+  {"name": "Flask", "version": "3.1.3", "type": "library", "ecosystem": "PyPI"},
+  {"name": "requests", "version": "2.31.0", "type": "library", "ecosystem": "PyPI"},
+  {"name": "openai-whisper", "version": "20250625", "type": "library", "ecosystem": "PyPI"}
+]

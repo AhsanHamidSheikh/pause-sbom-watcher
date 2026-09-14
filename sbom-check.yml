@@ -1,0 +1,53 @@
+name: SBOM Maintenance
+
+# This is the piece that turns "I generated an SBOM once" into
+# "I maintain an SBOM" -- the JD's actual wording. It re-runs on every
+# push AND on a weekly schedule, so newly disclosed CVEs against your
+# existing dependency versions get caught even if the code never changes.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"  # every Monday at 06:00 UTC
+  workflow_dispatch: {}     # allows manual trigger from the Actions tab
+
+jobs:
+  update-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate SBOM and run vulnerability scan
+        run: |
+          python sbom_generator.py \
+            --input components.example.json \
+            --project-name "Pause" \
+            --project-version "1.0.0" \
+            --output-dir sbom_output
+
+      - name: Upload SBOM + report as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-and-vuln-report
+          path: sbom_output/
+
+      - name: Fail the run if any vulnerabilities were found
+        run: |
+          python -c "
+          import json, sys
+          report = json.load(open('sbom_output/vulnerability_report.json'))
+          found = [k for k, v in report.items() if v['vulnerabilities']]
+          if found:
+              print('Potential vulnerabilities found in:', found)
+              sys.exit(1)
+          print('No known vulnerabilities found.')
+          "
